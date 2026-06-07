@@ -68,4 +68,4 @@ The template ships with a starter set of skill playbooks under `.agents/skills/`
 
 ## Contributions
 
-For feedback and additional contributions, please feel free to raise an issue or create a pull reqeuest. 
+For feedback and additional contributions, please feel free to raise an issue or create a pull request. 
