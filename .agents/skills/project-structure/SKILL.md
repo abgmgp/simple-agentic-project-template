@@ -22,18 +22,25 @@ Do not hardcode `project-structure.md` as the only valid name. Treat any file wh
 
 ## 2. Review mode — observe the actual layout
 
-Map the source:
+First, determine the scan root(s). Do not assume `src/`. Derive them from what's actually in the repo:
+
+- Read `.agents/context/tech-stack.md` (or whichever file documents the stack) if present — it tells you what ecosystem(s) you're in.
+- Detect manifest files at the repo root and one level down to confirm: `package.json`, `pyproject.toml` / `setup.py`, `*.csproj` / `*.sln` / `Directory.Packages.props`, `go.mod`, `Cargo.toml`, `pom.xml` / `build.gradle*`, `composer.json`, `Gemfile`, `mix.exs`, etc.
+- Pick scan roots from what exists, in this order: `src/` if it exists → otherwise the directories that contain manifest files → otherwise the repo root excluding `node_modules`, `dist`, `build`, `bin`, `obj`, `target`, `.git`, `.agents`, `.claude`, `.github`, `vendor`, `.venv`.
+- Multi-root layouts are normal (e.g. a .NET solution with `Services/`, `Infrastructure/`, `Gateway/` siblings; a monorepo with `packages/*`). Treat each as a scan root.
+
+Map the layout:
 
 ```bash
-find src -maxdepth 2 -type d | sort
-find src -maxdepth 2 -type f | sort
+find <scan-root> -maxdepth 2 -type d | sort
+find <scan-root> -maxdepth 2 -type f | sort
 ```
 
-For each top-level folder under `src/`, note:
+For each top-level folder under your scan root(s), note:
 
 - What kinds of files live there (extensions, naming pattern).
 - Sample contents (peek at 1–2 representative files).
-- How it relates to other folders (imports, references).
+- How it relates to other folders (imports, references, project references).
 
 Also confirm assertions made in the existing document — e.g. if it says a folder contains "two files" or names a specific file, verify that's still true.
 
@@ -53,11 +60,13 @@ Ask which to apply. Accept answers like "all additions", "all + fixes", or speci
 
 ## 4. Bootstrap mode — create `project-structure.md` from the scan
 
-When no structure document exists, run the §2 scan and write `.agents/context/project-structure.md`. For each top-level folder under `src/`, include:
+When no structure document exists, perform the §2 scan-root detection and then the §2 mapping, and write `.agents/context/project-structure.md`. For each top-level folder under your detected scan root(s), include:
 
 - Folder name as a heading.
 - One-line role description grounded in observed contents.
 - Notable sub-folders or naming conventions, only when supported by what's actually there.
+
+Do not impose ecosystem-specific groupings (frontend/backend, app/components, services/infrastructure, etc.) unless the source layout actually exhibits them. The document mirrors what exists; it does not normalize the project toward a template.
 
 Template:
 
@@ -75,7 +84,8 @@ Order folders alphabetically. After writing, show the user the file and ask whet
 
 ## Guardrails
 
-- Do not invent folders or sub-folders. Every entry must be traceable to a real path in `src/` (or the relevant scan root).
+- Do not invent folders or sub-folders. Every entry must be traceable to a real path in the detected scan root(s).
+- Do not assume any particular stack or layout shape. No frontend defaults, no backend defaults, no monorepo defaults — derive everything from detected manifests and observed folders.
 - Do not edit files outside `.agents/context/` as part of this skill.
 - Do not remove existing entries without explicit user approval.
 - If the source is genuinely sparse (e.g. only a few folders), keep the document short — do not pad with speculative structure.

@@ -40,7 +40,26 @@ git push -u origin HEAD
 
 ## 4. Draft the PR body
 
-Use the template below. Fill it from the diff against the target branch (`git log <target>..HEAD` and `git diff <target>...HEAD`).
+Use the template below. Fill it from the diff against the target branch (`git log <target>..HEAD` and `git diff <target>...HEAD`). Derive the Test Checklist items from the **detected stack and the changed files** — do not hardcode `npm` commands.
+
+Stack-detection cues for the checklist:
+
+- Consult `.agents/context/tech-stack.md` first if present.
+- Otherwise inspect manifests at the repo root and one level down (`package.json`, `*.csproj`/`*.sln`, `pyproject.toml`, `go.mod`, `Cargo.toml`, `pom.xml`/`build.gradle*`, `composer.json`, `Gemfile`, etc.).
+- Prefer commands that already exist: `package.json` scripts, `.github/workflows/ci.yml` steps, `Makefile` targets, `justfile` recipes. If the repo has a CI workflow, mirror its validation commands in the checklist rather than guessing.
+
+Map detected stack → default checklist entries (only include what's real):
+
+| Stack | Typical entries |
+|---|---|
+| Node | `npm run lint` / `npm test` / `npm run build` (only if the matching script exists; use `pnpm` / `yarn` if that's the lockfile) |
+| .NET | `dotnet build <sln> -c Release`, `dotnet test <sln> -c Release` (only if a test project exists) |
+| Python | `ruff check` / `mypy` / `pytest` (only if configured) |
+| Go | `go vet ./...`, `go test ./...` |
+| Rust | `cargo fmt --check`, `cargo clippy -- -D warnings`, `cargo test` |
+| Java/Kotlin | `./gradlew build` or `mvn -B -ntp verify` |
+
+Always add a "Manual smoke test of the affected module/endpoint/CLI surface" line plus scenario-specific checks pulled from the diff (new endpoints, new flags, changed migrations, UI screens touched, etc.).
 
 ```markdown
 ## Summary
@@ -50,10 +69,10 @@ Use the template below. Fill it from the diff against the target branch (`git lo
 <What was changed and why. Reference key files and the user-visible effect.>
 
 ## Test Checklist
-- [ ] Lint passes (`npm run lint`)
-- [ ] Build passes (`npm run build:dev`)
-- [ ] Manual smoke test of the affected module
-- [ ] <add scenario-specific checks here>
+- [ ] <validation command 1 from detected stack>
+- [ ] <validation command 2 from detected stack>
+- [ ] Manual smoke test of the affected surface
+- [ ] <scenario-specific check derived from the diff>
 ```
 
 Title: short, imperative, under 70 characters. Pull from the most descriptive commit subject if it fits; otherwise summarize.

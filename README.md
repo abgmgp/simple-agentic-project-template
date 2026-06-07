@@ -31,16 +31,16 @@ AGENTS.md                   # Codex CLI pointer
 
 ## Included Skills
 
-The template ships with a starter set of skill playbooks under `.agents/skills/`. Some of the skills provided are for general development use case, while others are for template and context maintenance.
+The template ships with a starter set of skill playbooks under `.agents/skills/`. Some of the skills provided are for general development use case, while others are for template and context maintenance. The skills are setup to automatically support most mdodern frontend/backend tech stacks for general usage. 
 
-- **`ci`** - Creates a GitHub Actions workflow at `.github/workflows/ci.yml` that runs on push and pull request activity against the `main` or `master` branch, wiring up the project's install/lint/build/test scripts. Frontend only.
-- **`cleanup`** - Scans the source for leftover log calls, redundant comments, and dead code from development commits, then removes them with user confirmation and validates with a test build.
-- **`code-standard`** - Reviews and revises the coding standard documents under `.agents/context/` against the actual source, or bootstraps one when none exists.
+- **`ci`** - Creates a GitHub Actions workflow at `.github/workflows/ci.yml` that runs on push and pull request activity against the `main` or `master` branch.
+- **`cleanup`** - Scans the source for leftover debug calls, redundant comments, and dead code from development commits, then removes them with user confirmation and validates with a test build.
+- **`code-standard`** - Reviews and revises the coding standard documents under `.agents/context/` against the actual source, or creates one when none exists.
 - **`passcheck`** - Audits the source for code that does not comply with the standards and architecture documented under `.agents/context/`.
 - **`pr`** - Opens a pull request to `main`/`master` on GitHub or Azure workflows with a summary, implemented changes, and a test checklist.
 - **`project-structure`** - Reviews and revises the project structure/architecture document under `.agents/context/` to match the actual source layout, or creates a new one if no template is detected.
 - **`scaffold-module`** - Scaffolds a new module from a description, following the established module setup guidelines and the project's existing architecture conventions.
-- **`stack`** — Reviews and revises the tech stack document under `.agents/context/` against `package.json`, flagging security risks and deprecated dependencies. Frontend only.
+- **`stack`** — Reviews and revises the tech stack document under `.agents/context/` against currently used packages and dependencies, flagging security risks and deprecated defaults (if any).
 
 ## How to Use
 
@@ -60,9 +60,11 @@ The template ships with a starter set of skill playbooks under `.agents/skills/`
    - Create `.agents/skills/<name>/SKILL.md` with property (`name:`, `description:`).
    - Create `.claude/skills/<name>/SKILL.md` stub pointing at the default file.
 
-4. **(Optional) Modify the scaffold-module reference.** If you want your scaffolding skill to be more specific with your current development process, edit the `.agents/skills/scaffold-module/references/module-setup-guidelines.md` to your intended use case.
+5. **(Optional) Setup the context files.** If migrating for the first time, run the following skills in order: `stack`, `project-structure`, then `code-standard` for last. Once completed tweak the generated files according to your preference.
 
-5. **Start working.** Open the project in Claude Code, Codex CLI, or Copilot CLI. They should pick up the pointer file and load the `.agents/` context automatically.
+6. **(Optional) Modify the scaffold-module reference.** If you want your scaffolding skill to be more specific with your current development process, edit the `.agents/skills/scaffold-module/references/module-setup-guidelines.md` to your intended use case.
+
+7. **Start working.** Open the project in Claude Code, Codex CLI, or Copilot CLI. They should pick up the pointer file and load the `.agents/` context automatically.
 
 ## Contributions
 
