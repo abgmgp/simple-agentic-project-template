@@ -48,7 +48,6 @@ The template ships with a starter set of skill playbooks under `.agents/skills/`
    ```bash
    git clone https://github.com/<your-org>/simple-agentic-project-template.git my-new-project
    cd my-new-project
-   rm -rf .git && git init
    ```
 
 3. **Fill in `.agents/context/`.**
